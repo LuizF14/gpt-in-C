@@ -162,7 +162,7 @@ void multihead_attention(float *Q, float *K, float *V, float *out,
 
     float attn_scores[n_heads][seq_len * seq_len];
 
-    #pragma omp parallel for num_threads(4)
+    #pragma omp parallel for
     for (int h = 0; h < n_heads; h++) {
         float *Qh = Q + h * head_dim;
         float *Kh = K + h * head_dim;

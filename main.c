@@ -7,10 +7,10 @@
 int main() {
     
     GPT2Model model;
-    load_model(&model, "GPT2/bin");
+    load_model(&model, "bin/");
     
     Vocab vocab;
-    load_vocab(&vocab, "GPT2/bin/vocab.csv");
+    load_vocab(&vocab, "bin/vocab.csv");
     
     char* prompt[] = {"May", "Ġthe", "Ġforce", "Ġbe", "Ġwith"};
     int seq_len = 5;
