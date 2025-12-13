@@ -3,3 +3,6 @@
 /bin
 
 /gpt-venv
+/gpt-in-c
+
+.vscode/

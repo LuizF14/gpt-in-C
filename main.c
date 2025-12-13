@@ -1,56 +1,50 @@
-#include "GPT2_lib.h"
+#include "GPT2_lib/GPT2_lib.h"
 #ifdef TEST_TIME
     #include <sys/time.h>
     #include "JSON_lib.h"
 #endif
 
+#include <stdio.h>
+
+#define MAX_PROMPT 4096
+
 int main() {
-    
     GPT2Model model;
     load_model(&model, "bin/");
     
     Vocab vocab;
     load_vocab(&vocab, "bin/vocab.csv");
-    
+
     char* prompt[] = {"May", "Ġthe", "Ġforce", "Ġbe", "Ġwith"};
     int seq_len = 5;
     int seq_tokens[MAX_SEQ];
     for (int i = 0; i < seq_len; i++){
         seq_tokens[i] = encode_token(&vocab, prompt[i]);
+        printf("%s ", prompt[i]);
+    }
+
+    while(seq_len < 10) {
+        float* emb_output = build_input_embeddings(&model, seq_tokens, seq_len);
+        for (int i = 0; i < 12; i++) {
+            transformer_block(&model, emb_output, seq_len, i);
+        }
+        final_block(&model, emb_output, seq_len);
+
+        float* logits = final_logits(&model, emb_output, seq_len);
+
+        int next_token = argmax(&logits[(seq_len-1) * MAX_VOCAB], MAX_VOCAB);
+
+        printf("%s ", decode_token(&vocab, next_token));
+        fflush(stdout);
+        seq_tokens[seq_len] = next_token;
+        seq_len++;
+
+        free(logits);
+        free(emb_output);
     }
     
-    #ifdef TEST_TIME
-        struct timeval t1, t2;
-        double Elapsed_Time;
-        gettimeofday(&t1, NULL); // Start timer
-    #endif
-
-    int n_embd;
-    float* emb_output = build_input_embeddings(&model, seq_tokens, seq_len, &n_embd);
-    for (int i = 0; i < 12; i++) {
-        transformer_block(&model, emb_output, seq_len, n_embd, 12, i);
-    }
-
-    float* logits = final_logits(&model, emb_output, seq_len, n_embd);
-
-    int next_token = argmax(logits, vocab.size);
-
-    #ifdef TEST_TIME
-        gettimeofday(&t2, NULL);
-        
-        Elapsed_Time = (t2.tv_sec - t1.tv_sec)*1000.0; 
-        Elapsed_Time += (t2.tv_usec - t1.tv_usec)/1000.0;
-        
-        startJson();
-        printJsonLine("ElapsedTime", Elapsed_Time);
-        finishJson();
-    #else 
-        const char* decoded = decode_token(&vocab, next_token);
-        printf("Texto: %s\n", decoded);
-    #endif
-
     free_model(&model);
-    free(emb_output);
+    // free(&vocab);
 
     return 0;
 }
