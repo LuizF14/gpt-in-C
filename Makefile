@@ -1,5 +1,9 @@
 CFLAGS := -g
-gpt2_files := main.c GPT2_lib/transformer.c GPT2_lib/load.c GPT2_lib/GPT2_lib.c GPT2_lib/GPT2_lib.h JSON_lib.h
+
+GPT2_LIB_DIR := GPT2_lib
+GPT2_LIB_C   := $(wildcard $(GPT2_LIB_DIR)/*.c)
+
+gpt2_files := main.c $(GPT2_LIB_C)
 
 gpt2_serial: $(gpt2_files)
 	gcc $(CFLAGS) -o gpt2_serial.exe $^ -lm -DTEST_TIME

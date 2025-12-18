@@ -15,32 +15,24 @@ int main() {
     Vocab vocab;
     load_vocab(&vocab, "bin/vocab.csv");
 
-    char* prompt[] = {"May", "Ġthe", "Ġforce", "Ġbe", "Ġwith"};
-    int seq_len = 5;
+    // char* prompt[] = {"May", "Ġthe", "Ġforce", "Ġbe", "Ġwith"};
+    // int seq_len = 5;
+    char* prompt[] = {"May"};
+    int seq_len = 1;
+
     int seq_tokens[MAX_SEQ];
     for (int i = 0; i < seq_len; i++){
         seq_tokens[i] = encode_token(&vocab, prompt[i]);
         printf("%s ", prompt[i]);
+        fflush(stdout);
     }
 
     while(seq_len < 10) {
-        float* emb_output = build_input_embeddings(&model, seq_tokens, seq_len);
-        for (int i = 0; i < 12; i++) {
-            transformer_block(&model, emb_output, seq_len, i);
-        }
-        final_block(&model, emb_output, seq_len);
-
-        float* logits = final_logits(&model, emb_output, seq_len);
-
-        int next_token = argmax(&logits[(seq_len-1) * MAX_VOCAB], MAX_VOCAB);
-
-        printf("%s ", decode_token(&vocab, next_token));
-        fflush(stdout);
-        seq_tokens[seq_len] = next_token;
+        char* next_word = generate_text(seq_tokens, seq_len, &model, &vocab);
+        seq_tokens[seq_len] = next_word;
         seq_len++;
-
-        free(logits);
-        free(emb_output);
+        printf("%s", next_word);
+        fflush(stdout);
     }
     
     free_model(&model);

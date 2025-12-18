@@ -61,10 +61,9 @@ int encode_token(Vocab *vocab, const char *word);
 char* decode_token(Vocab *vocab, int id);
 
 int argmax(float *arr, int len);
-
-void top_k_argmax(float *arr, int len, int *top_indices, int k);
-
 void multihead_attention(float *Q, float *K, float *V, float *out,
                          int seq_len);
+
+char* generate_text(int* input, int seq_len, GPT2Model *model, Vocab *vocab);
 
 #endif

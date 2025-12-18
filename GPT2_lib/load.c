@@ -82,3 +82,56 @@ void free_model(GPT2Model *model) {
     for (int i = 0; i < model->count; i++)
         free(model->tensors[i].data);
 }
+
+void print_tensor_info(const Tensor *t, int n_vals) {
+    printf("Tensor: %s\n", t->name);
+    printf("Dimensões: ");
+    for (int i = 0; i < t->ndims; i++)
+        printf("%d ", t->shape[i]);
+    printf("\nPrimeiros valores: ");
+    for (int i = 0; i < n_vals && i < t->num_elements; i++)
+        printf("%.5f ", t->data[i]);
+    printf("\n\n");
+}
+
+Tensor* get_tensor(GPT2Model *model, const char *name) {
+    for (int i = 0; i < model->count; i++) {
+        if (strcmp(model->tensors[i].name, name) == 0) {
+            return &model->tensors[i];
+        }
+    }
+    return NULL;
+}
+
+void load_vocab(Vocab *vocab, const char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (!f) {
+        perror("Erro ao abrir vocab.csv");
+        exit(1);
+    }
+
+    vocab->size = 0;
+    char token[MAX_TOKEN_LEN];
+    int id;
+    char line[256];
+    while (fgets(line, sizeof(line), f)) {
+        line[strcspn(line, "\r\n")] = 0;
+
+        char *last_comma = strrchr(line, ',');
+        if (!last_comma) continue; // linha inválida
+
+        *last_comma = '\0'; // separa token e id
+        char *token_str = line;
+        char *id_str = last_comma + 1;
+        int id = atoi(id_str);
+
+        strncpy(vocab->entries[vocab->size].token, token_str, MAX_TOKEN_LEN - 1);
+        vocab->entries[vocab->size].token[MAX_TOKEN_LEN - 1] = '\0';
+        vocab->entries[vocab->size].id = id;
+
+        vocab->size++;
+        if (vocab->size >= MAX_VOCAB) break;
+    }
+
+    fclose(f);
+}

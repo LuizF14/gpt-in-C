@@ -1,6 +1,4 @@
-#include "GPT2_lib.h"
-
-#define EPS 1e-5
+#include "math_utils.h"
 
 void matmul(float *out, float *a, float *b, int m, int n, int p) {
     memset(out, 0, m * p * sizeof(float));
@@ -89,4 +87,17 @@ void transpose(float* output, const float* input, int m, int n) {
             output[j * m + i] = input[i * n + j];
         }
     }
+}
+
+int argmax(float *arr, int len) {
+    if (len <= 0) return -1;
+    int max_idx = 0;
+    float max_val = arr[0];
+    for (int i = 1; i < len; i++) {
+        if (arr[i] > max_val) {
+            max_val = arr[i];
+            max_idx = i;
+        }
+    }
+    return max_idx;
 }

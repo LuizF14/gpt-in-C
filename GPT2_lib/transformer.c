@@ -1,5 +1,5 @@
 #include "GPT2_lib.h"
-#include "math_utils.c"
+#include "math_utils.h"
 
 void softmax_layer(float *input, int m, int n) {
     for (int i = 0; i < m; i++) {
@@ -26,9 +26,7 @@ float* build_input_embeddings(GPT2Model *model, int *seq_tokens, int seq_len) {
             emb_output[i * N_EMBD + j] = token_vec[j] + pos_vec[j];
         }
     }
-
-    // free(Wte);
-    // free(Wpe);
+    
     return emb_output;
 }
 
