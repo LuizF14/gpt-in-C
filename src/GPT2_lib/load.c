@@ -26,16 +26,14 @@ float *read_bin(const char *filename, size_t *num_elements) {
     *num_elements = file_size / sizeof(float);
 
     float *data = (float *)malloc(file_size);
-    fread(data, sizeof(float), *num_elements, file);
+    size_t n = fread(data, sizeof(float), *num_elements, file);
+    if (n != *num_elements) {
+        fprintf(stderr, "Erro ao ler arquivo binário\n");
+        exit(1);
+    }
 
     fclose(file);
     return data;
-}
-
-static int compare_filenames(const void *a, const void *b) {
-    const char *sa = (const char *)a;
-    const char *sb = (const char *)b;
-    return strcmp(sa, sb);
 }
 
 // --- Função para carregar todos os tensores de uma pasta ---
@@ -55,7 +53,8 @@ void load_model(GPT2Model *model, const char *dir_path) {
         // Extrai nome base (sem .shape)
         char base[MAX_NAME_LEN];
         int filename_len = strlen(file->d_name);
-        strncpy(base, file->d_name, filename_len - 6);
+        snprintf(base, sizeof(base), "%.*s", filename_len - 6, file->d_name);
+        //strncpy(base, file->d_name, filename_len - 6);
         base[filename_len - 6] = '\0';
 
         char shape_file[MAX_NAME_LEN + 32], bin_file[MAX_NAME_LEN + 32];
@@ -89,7 +88,7 @@ void print_tensor_info(const Tensor *t, int n_vals) {
     for (int i = 0; i < t->ndims; i++)
         printf("%d ", t->shape[i]);
     printf("\nPrimeiros valores: ");
-    for (int i = 0; i < n_vals && i < t->num_elements; i++)
+    for (size_t i = 0; i < (size_t) n_vals && i < t->num_elements; i++)
         printf("%.5f ", t->data[i]);
     printf("\n\n");
 }
@@ -111,8 +110,6 @@ void load_vocab(Vocab *vocab, const char *filename) {
     }
 
     vocab->size = 0;
-    char token[MAX_TOKEN_LEN];
-    int id;
     char line[256];
     while (fgets(line, sizeof(line), f)) {
         line[strcspn(line, "\r\n")] = 0;
@@ -120,12 +117,11 @@ void load_vocab(Vocab *vocab, const char *filename) {
         char *last_comma = strrchr(line, ',');
         if (!last_comma) continue; // linha inválida
 
-        *last_comma = '\0'; // separa token e id
-        char *token_str = line;
+        *last_comma = '\0';
         char *id_str = last_comma + 1;
         int id = atoi(id_str);
 
-        strncpy(vocab->entries[vocab->size].token, token_str, MAX_TOKEN_LEN - 1);
+        strncpy(vocab->entries[vocab->size].token, line, MAX_TOKEN_LEN - 1);
         vocab->entries[vocab->size].token[MAX_TOKEN_LEN - 1] = '\0';
         vocab->entries[vocab->size].id = id;
 

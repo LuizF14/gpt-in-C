@@ -1,8 +1,9 @@
 *.exe
 
-/bin
+bin/
 
-/gpt-venv
-/gpt-in-c
+gpt-in-c/
+
+build/
 
 .vscode/

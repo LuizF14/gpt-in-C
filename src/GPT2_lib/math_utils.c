@@ -36,7 +36,7 @@ float gelu(float x) {
 }
 
 double get_mean(float *input, int n_embd) {
-    double mean;
+    double mean = 0.0;
     for (int i = 0; i < n_embd; i++)
         mean += input[i];
     mean /= n_embd;
@@ -44,7 +44,7 @@ double get_mean(float *input, int n_embd) {
 }
 
 double get_var(float *input, int n_embd, double mean) {
-    double var;
+    double var = 0.0;
     for (int i = 0; i < n_embd; i++) {
         float u = input[i] - mean;
         var += u * u;

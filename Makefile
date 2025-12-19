@@ -1,15 +1,26 @@
-CFLAGS := -g
+CC = gcc
+CFLAGS = -Wall -Wextra -O2 -Isrc -Isrc/GPT2_lib -Itests/unity/src
+LDFLAGS = -lm
 
-GPT2_LIB_DIR := GPT2_lib
-GPT2_LIB_C   := $(wildcard $(GPT2_LIB_DIR)/*.c)
+BUILD = build
 
-gpt2_files := main.c $(GPT2_LIB_C)
+MAIN = src/main.c 
 
-gpt2_serial: $(gpt2_files)
-	gcc $(CFLAGS) -o gpt2_serial.exe $^ -lm -DTEST_TIME
+GPT2_lib = src/GPT2_lib/encoder.c \
+      src/GPT2_lib/transformer.c \
+      src/GPT2_lib/math_utils.c \
+      src/GPT2_lib/load.c \
+      src/GPT2_lib/GPT2_lib.c
 
-gpt2_parallel: $(gpt2_files)
-	gcc $(CFLAGS) -o gpt2_parallel.exe $^ -lm -DTEST_TIME -fopenmp
+TEST = tests/c/test_small_prompt.c
 
-gpt2: $(gpt2_files)
-	gcc $(CFLAGS) -o gpt2.exe $^ -lm
+all: gpt2
+
+gpt2:
+	$(CC) $(CFLAGS) $(GPT2_lib) $(MAIN) -o $(BUILD)/gpt2 $(LDFLAGS)
+
+test_small_prompt:
+	$(CC) $(CFLAGS) $(GPT2_lib) $(TEST) -o $(BUILD)/test_small_prompt $(LDFLAGS)
+
+clean:
+	rm -f gpt2.exe test_math

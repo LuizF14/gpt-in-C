@@ -16,7 +16,7 @@
 #define MAX_TENSORS 4096
 
 #define MAX_VOCAB 50257
-#define MAX_TOKEN_LEN 128
+#define MAX_TOKEN_LEN 127
 
 #define MAX_SEQ 1024
 #define N_EMBD 768
@@ -45,25 +45,17 @@ typedef struct {
     int size;
 } Vocab;
 
+char* generate_text(int* seq_tokens, int* seq_len, GPT2Model *model, Vocab *vocab);
+
 void load_model(GPT2Model *model, const char *dir_path);
 void print_tensor_info(const Tensor *t, int n_vals);
 void free_model(GPT2Model *model);
 
 Tensor* get_tensor(GPT2Model *model, const char *name);
-
-float* build_input_embeddings(GPT2Model *model, int *seq_tokens, int seq_len);
-void transformer_block(GPT2Model *model, float *input, int seq_len, int layer);
-void final_block(GPT2Model *model, float *input, int seq_len);
-float* final_logits(GPT2Model *model, float *x, int seq_len);
-
 void load_vocab(Vocab *vocab, const char *filename);
+
 int encode_token(Vocab *vocab, const char *word);
 char* decode_token(Vocab *vocab, int id);
-
-int argmax(float *arr, int len);
-void multihead_attention(float *Q, float *K, float *V, float *out,
-                         int seq_len);
-
-char* generate_text(int* input, int seq_len, GPT2Model *model, Vocab *vocab);
+int* encode_seq(Vocab *vocab, char** prompt, int seq_len);
 
 #endif

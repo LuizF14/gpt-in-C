@@ -1,4 +1,4 @@
-#include "GPT2_lib.h"
+#include "transformer.h"
 #include "math_utils.h"
 
 void softmax_layer(float *input, int m, int n) {
