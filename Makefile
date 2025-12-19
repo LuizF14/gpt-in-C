@@ -1,6 +1,8 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -Isrc -Isrc/GPT2_lib -Itests/unity/src
+CFLAGS = -Wall -Wextra -O0 -g -Isrc -Isrc/GPT2_lib -Itests/unity/src
 LDFLAGS = -lm
+
+DEBUGFLAGS = -fno-omit-frame-pointer -fno-inline -fno-inline-functions
 
 BUILD = build
 
@@ -16,11 +18,17 @@ TEST = tests/c/test_small_prompt.c
 
 all: gpt2
 
+$(BUILD):
+	mkdir -p $(BUILD)
+
 gpt2:
 	$(CC) $(CFLAGS) $(GPT2_lib) $(MAIN) -o $(BUILD)/gpt2 $(LDFLAGS)
+
+gpt2_debug:
+	$(CC) $(CFLAGS) $(DEBUGFLAGS) $(GPT2_lib) $(MAIN) -o $(BUILD)/gpt2 $(LDFLAGS)
 
 test_small_prompt:
 	$(CC) $(CFLAGS) $(GPT2_lib) $(TEST) -o $(BUILD)/test_small_prompt $(LDFLAGS)
 
 clean:
-	rm -f gpt2.exe test_math
+	rm -rf $(BUILD)/*

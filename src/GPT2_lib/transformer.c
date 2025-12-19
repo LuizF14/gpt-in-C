@@ -214,5 +214,6 @@ float* final_logits(GPT2Model *model, float *x, int seq_len) {
     transpose(wte_transposed, Wte->data, MAX_VOCAB, N_EMBD);
     matmul(logits, x, wte_transposed, seq_len, N_EMBD, MAX_VOCAB);
     softmax(&logits[(seq_len-1)*MAX_VOCAB], MAX_VOCAB);
+    free(wte_transposed);
     return logits;
 }

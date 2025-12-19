@@ -57,5 +57,7 @@ void load_vocab(Vocab *vocab, const char *filename);
 int encode_token(Vocab *vocab, const char *word);
 char* decode_token(Vocab *vocab, int id);
 int* encode_seq(Vocab *vocab, char** prompt, int seq_len);
+void decode_word(char* encoded, char* decoded);
+void encode_prompt(char **prompt, const char *input, int *seq_len) ;
 
 #endif
