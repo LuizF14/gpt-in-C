@@ -5,6 +5,8 @@
 ![Status](https://img.shields.io/badge/status-WIP-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
+![Gifzinho](demo.gif)
+
 Este projeto tem como objetivo recriar a inferência do modelo GPT-2 inteiramente em C, partindo dos pesos originais do modelo e implementando manualmente todas as etapas necessárias para a geração de texto.
 
 A aplicação funciona como um modelo de linguagem autoregressivo: dado um *prompt* inicial, o sistema prevê o próximo token e o adiciona à sequência, repetindo esse processo para completar o texto de forma contínua, de maneira semelhante ao GPT-2 original.
